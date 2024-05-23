@@ -1,0 +1,50 @@
+version: "3.7"
+services:
+
+  java-project:
+    build: .
+    #image: cr.yandex/crpnehc8dfgvogjtn8at/ubuntu-nginx
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - dev
+    depends_on:
+      - java-project-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  java-project-db:
+    container_name: db
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+      - db:/docker-entrypoint-initdb.d/create_tables.sql
+    networks:
+      - dev
+
+  java-project-db-adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "1233:8080"
+    networks:
+      - dev
+
+volumes:
+  db:
+    driver: "local"
+  
+networks:
+  dev:
+    driver: bridge
