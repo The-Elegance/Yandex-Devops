@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class AuthorizationController
-{
+public class AuthorizationController {
     private final UserServiceImpl userService;
 
     @Autowired
@@ -19,21 +18,16 @@ public class AuthorizationController
     }
 
     @GetMapping("/registration")
-    public String registration()
-    {
+    public String registration() {
         return "registration";
     }
 
     @PostMapping("/registration")
-    public String addUser(User user, Model model)
-    {
-        try
-        {
+    public String addUser(User user, Model model) {
+        try {
             userService.addUser(user);
             return "redirect:/login";
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             model.addAttribute("message", "User already exists");
             return "registration";
         }

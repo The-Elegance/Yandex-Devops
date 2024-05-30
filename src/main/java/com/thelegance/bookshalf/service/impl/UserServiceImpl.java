@@ -34,19 +34,16 @@ public class UserServiceImpl implements UserDetailsService {
                 myUser.getPassword(), mapRolesToAuthorities(myUser.getRoles()));
     }
 
-    public void addUser(User user) throws Exception
-    {
+    public void addUser(User user) throws Exception {
         User userFromDb = userRepository.findByUsername(user.getUsername());
-        if (userFromDb != null)
-        {
+        if (userFromDb != null) {
             throw new Exception("user exist");
         }
         user.setRoles(Collections.singleton(Role.DEFAULT));
         userRepository.save(user);
     }
 
-    private List<? extends GrantedAuthority> mapRolesToAuthorities(Set<Role> roles)
-    {
+    private List<? extends GrantedAuthority> mapRolesToAuthorities(Set<Role> roles) {
         return roles.stream().map(r -> new SimpleGrantedAuthority("ROLE_" +
                 r.name())).collect(Collectors.toList());
     }

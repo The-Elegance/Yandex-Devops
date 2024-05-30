@@ -48,7 +48,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void add(Book book, MultipartFile image){
+    public void add(Book book, MultipartFile image) {
         try {
             String accessKey = "YCAJEdITYar2HY6rLuBR7JKAj";
             String secretKey = "YCP7IrwNROM25DcGRI_PXIqlmYyASAfS3-IeedMD";
@@ -64,19 +64,17 @@ public class BookServiceImpl implements BookService {
             File file = new File(uploadPath + "/test2.jpg");
 
             // Перенос содержимого multipartFile в файл
-            if(image != null) {
+            if (image != null) {
                 image.transferTo(file);
                 PutObjectRequest request = new PutObjectRequest(bucketName, key, file);
                 s3Client.putObject(request);
-            }
-            else{
+            } else {
                 File file1 = new File(uploadPath + "/test.jpg");
                 PutObjectRequest request = new PutObjectRequest(bucketName, key, file1);
                 s3Client.putObject(request);
             }
             repository.save(book);
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             System.out.print("error");
         }
     }
