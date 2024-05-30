@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface BookService {
     List<Book> getAllBooks();
     Book getById(Long id);
-    void add(Book book, File image);
+    void add(Book book, MultipartFile image);
     void update(Long id, Book book);
     void delete(Long id);
 }

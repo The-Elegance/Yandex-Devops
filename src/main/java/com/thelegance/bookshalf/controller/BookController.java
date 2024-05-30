@@ -27,7 +27,7 @@ public class BookController {
 
     @PostMapping(value = "/books")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addBook(@RequestPart Book book, @RequestPart File image) {
+    public void addBook(@RequestBody Book book, @RequestParam(required = false) MultipartFile image) {
         bookService.add(book, image);
     }
 

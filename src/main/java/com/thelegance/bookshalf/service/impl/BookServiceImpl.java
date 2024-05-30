@@ -16,6 +16,7 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +33,9 @@ public class BookServiceImpl implements BookService {
     @Autowired
     BookRepository repository;
 
+    @Value("${upload.path}")
+    private String uploadPath;
+
     @Override
     public List<Book> getAllBooks() {
         return repository.findAll();
@@ -44,24 +48,37 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void add(Book book, File image) {
-        String accessKey = "YCAJEdITYar2HY6rLuBR7JKAj";
-        String secretKey = "YCP7IrwNROM25DcGRI_PXIqlmYyASAfS3-IeedMD";
-        String bucketName = "new-baket-book";
-        String region = "ru-central1";
+    public void add(Book book, MultipartFile image){
+        try {
+            String accessKey = "YCAJEdITYar2HY6rLuBR7JKAj";
+            String secretKey = "YCP7IrwNROM25DcGRI_PXIqlmYyASAfS3-IeedMD";
+            String bucketName = "new-baket-book";
+            String region = "ru-central1";
 
-        BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
+            BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
 
-        AmazonS3 s3Client = new AmazonS3Client(credentials);
-        s3Client.setEndpoint("storage.yandexcloud.net");
+            AmazonS3 s3Client = new AmazonS3Client(credentials);
+            s3Client.setEndpoint("storage.yandexcloud.net");
 
-        String key = book.getCoverFileName(); // Имя файла в Object Storage
-        File file = image;
-        //File file = new File("C:\\Users\\adara\\IdeaProjects\\Yandex-Devops\\src\\main\\resources\\test.jpg"); // Путь к вашему изображению
+            String key = book.getCoverFileName(); // Имя файла в Object Storage
+            File file = new File(uploadPath + "/test2.jpg");
 
-        PutObjectRequest request = new PutObjectRequest(bucketName, key, file);
-        s3Client.putObject(request);
-        repository.save(book);
+            // Перенос содержимого multipartFile в файл
+            if(image != null) {
+                image.transferTo(file);
+                PutObjectRequest request = new PutObjectRequest(bucketName, key, file);
+                s3Client.putObject(request);
+            }
+            else{
+                File file1 = new File(uploadPath + "/test.jpg");
+                PutObjectRequest request = new PutObjectRequest(bucketName, key, file1);
+                s3Client.putObject(request);
+            }
+            repository.save(book);
+        }
+        catch (IOException e){
+            System.out.print("error");
+        }
     }
 
     @Override
