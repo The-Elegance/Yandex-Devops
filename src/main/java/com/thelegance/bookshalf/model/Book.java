@@ -19,4 +19,5 @@ public class Book {
     String name;
     String description;
     String author;
+    String coverFileName;
 }
